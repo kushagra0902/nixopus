@@ -13,6 +13,8 @@ import { useRouter } from 'next/navigation';
 import { Application } from '@/redux/types/applications';
 import { Environment } from '@/redux/types/deploy-form';
 import { Skeleton } from '@/components/ui/skeleton';
+import Labels from './application-details/labels';
+
 
 function AppItem({
   name,
@@ -22,7 +24,8 @@ function AppItem({
   build_pack,
   port,
   id,
-  status
+  status,
+  labels
 }: Application) {
   const router = useRouter();
   const formattedDate = updated_at
@@ -34,7 +37,7 @@ function AppItem({
         minute: '2-digit'
       })
     : 'N/A';
-
+    
   const formattedBuildPack = build_pack
     .replace(/([A-Z])/g, ' $1')
     .trim()
@@ -89,6 +92,13 @@ function AppItem({
             {name}
           </CardTitle>
         </div>
+        {labels && labels.length > 0 && (
+          <Labels
+            applicationId={id}
+            labels={labels}
+            isEditable={false}
+          />
+        )}
       </CardHeader>
 
       <CardContent className="flex flex-col space-y-3 pb-2 z-10 relative">
@@ -101,6 +111,8 @@ function AppItem({
           <Package size={16} className="mr-2 text-muted-foreground/70" />
           <CardDescription className="text-sm capitalize">{formattedBuildPack}</CardDescription>
         </div>
+
+
       </CardContent>
 
       <CardFooter className="flex items-center justify-between pt-2 pb-3 border-t border-border z-10 relative">

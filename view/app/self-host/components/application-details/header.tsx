@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ExternalLink, MoreVertical, RotateCcw, TrashIcon } from 'lucide-react';
 import {
   DropdownMenu,
@@ -83,6 +84,19 @@ const ApplicationDetailsHeader = ({ application }: { application?: Application }
                 <ExternalLink className="h-5 w-5" />
               </Button>
             </div>
+            {application?.labels && application.labels.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {application.labels.map((label, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="text-sm px-3 py-1"
+                  >
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">

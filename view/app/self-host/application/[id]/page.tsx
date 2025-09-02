@@ -11,7 +11,7 @@ import ApplicationDetailsHeader from '../../components/application-details/heade
 import { useTranslation } from '@/hooks/use-translation';
 import { ResourceGuard } from '@/components/rbac/PermissionGuard';
 import { Skeleton } from '@/components/ui/skeleton';
-import PageLayout from '@/components/layout/page-layout';
+import Labels from '../../components/application-details/labels';
 
 function Page() {
   const { t } = useTranslation();
@@ -36,8 +36,18 @@ function Page() {
       action="read"
       loadingFallback={<Skeleton className="h-96" />}
     >
-      <PageLayout maxWidth="6xl" padding="md" spacing="lg">
+      <div className="container mx-auto py-6 space-y-8 max-w-4xl 2xl:max-w-7xl">
         <ApplicationDetailsHeader application={application} />
+            <Labels
+            applicationId={application?.id || ''}
+            labels={application?.labels || []}
+            onLabelsChange={(labels) => {
+              if (application) {
+                application.labels = labels;
+              }
+            }}
+            isEditable={true}
+          />
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList>
             <TabsTrigger value="monitoring">{t('selfHost.application.tabs.monitoring')}</TabsTrigger>
@@ -86,7 +96,7 @@ function Page() {
             <Monitor application={application} />
           </TabsContent>
         </Tabs>
-      </PageLayout>
+      </div>
     </ResourceGuard>
   );
 }
