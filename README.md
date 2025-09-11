@@ -7,7 +7,7 @@
   </ul>
 </div>
 
-<img width="1210" height="796" alt="image" src="https://github.com/user-attachments/assets/5d0145b1-6d56-4de9-b05c-84e5bedd0987" />
+<img width="1210" height="796" alt="image" src="https://github.com/user-attachments/assets/0c6488ff-6b27-4044-879f-6825e0d28507" />
 
 <a href="https://nixopus.com"><img align="right" src="./assets/nixopus_logo_transparent.png" alt="Nixopus Logo" width="250" /></a>
 <samp>
