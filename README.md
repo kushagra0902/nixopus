@@ -4,7 +4,7 @@
 
 
 <p align="center">
- Open Source server management platform with Docker support, terminal integration, and Self Hosting capabilities.
+ Open Source Server management platform with terminal integration, and Self Hosting capabilities.
 </p>
 
 <p align="center">
