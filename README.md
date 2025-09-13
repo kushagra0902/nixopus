@@ -1,52 +1,21 @@
-<div id="user-content-toc">
-  <ul style="list-style: none;">
-    <summary>
-      <h1><samp>Nixopus</samp></h1><br>
-      <h6>Streamline Your Entire Server Workflow — ServerOps with No Fuss</h6>
-    </summary>
-  </ul>
+<div align="center">
+  <img width="1800" height="520" alt="Heading(2)" src="https://github.com/user-attachments/assets/fa7ddf17-1062-4987-bead-e23fc8655ad3" />
 </div>
 
-<img width="1210" height="796" alt="image" src="https://github.com/user-attachments/assets/0c6488ff-6b27-4044-879f-6825e0d28507" />
 
-<a href="https://nixopus.com"><img align="right" src="./assets/nixopus_logo_transparent.png" alt="Nixopus Logo" width="250" /></a>
-<samp>
-  <table>  
-    <tr>
-      <td>
-        <a href="https://github.com/raghavyuva/nixopus/actions/workflows/security.yml">
-          <img src="https://github.com/raghavyuva/nixopus/actions/workflows/security.yml/badge.svg" alt="Security Scan" />
-        </a>
-        <a href="https://github.com/raghavyuva/nixopus/actions/workflows/build_container.yml">
-          <img src="https://github.com/raghavyuva/nixopus/actions/workflows/build_container.yml/badge.svg" alt="Package Manager" />
-        </a>
-        <a href="https://github.com/raghavyuva/nixopus/actions/workflows/release.yml">
-          <img src="https://github.com/raghavyuva/nixopus/actions/workflows/release.yml/badge.svg" alt="Release" />
-        </a>
-        <br />
-        <a href="https://www.youtube.com/watch?v=DrDGWNq4JM4">
-          <img src="https://img.shields.io/youtube/views/DrDGWNq4JM4?style=social&label=View%20Demo" alt="YouTube Video Views" />
-        </a>
-       <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/y/raghavyuva/nixopus">
-        <img src="https://madewithlove.now.sh/in?heart=true&colorA=%23ff671f&colorB=%23046a38&text=India" alt="Made with love in India" />
-        <br><br>
-        <div align="center">
-          <strong>
-            <a href="https://nixopus.com"> Website</a> |
-            <a href="https://docs.nixopus.com"> Documentation</a> |
-            <a href="https://docs.nixopus.com/blog/"> Blogs</a>
-          </strong>
-        </div>
-        <br>
-        <p align="center">
-          <a href="https://discord.gg/skdcq39Wpv" target="_blank">
-            <img src="https://user-images.githubusercontent.com/31022056/158916278-4504b838-7ecb-4ab9-a900-7dc002aade78.png" alt="Join our Discord Community" width="200" style="border-radius: 12px; box-shadow: 0px 4px 12px rgba(0,0,0,0.15);" />
-          </a>
-        </p>
-      </td>
-    </tr>
-  </table>
-</samp>
+<p align="center">
+ Open Source server management platform with Docker support, terminal integration, and Self Hosting capabilities.
+</p>
+
+<p align="center">
+  <a href="https://nixopus.com"><b>Website</b></a> •
+  <a href="https://docs.nixopus.com"><b>Documentation</b></a> •
+  <a href="https://docs.nixopus.com/blog/"><b>Blog</b></a> •
+  <a href="https://discord.gg/skdcq39Wpv"><b>Discord</b></a>
+</p>
+
+<img width="1210" height="764" alt="image" src="https://github.com/user-attachments/assets/3f1dc1e0-956d-4785-8745-ed59d0390afd" />
+
 
 > ⚠️ **Important Note**: Nixopus is currently in alpha/pre-release stage and is not yet ready for production use. While you're welcome to try it out, we recommend waiting for the beta or stable release before using it in production environments. The platform is still undergoing testing and development.
 
@@ -76,14 +45,6 @@ curl -sSL https://install.nixopus.com | bash
 
 ```bash
 curl -sSL https://install.nixopus.com | bash -s -- --skip-nixopus-install
-```
-
-### Self Host Nixopus on your VPS
-
-Once the CLI is installed, you can self host Nixopus on your VPS:
-
-```bash
-nixopus install
 ```
 
 #### Optional Parameters
