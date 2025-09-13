@@ -71,17 +71,6 @@ nixopus install \
 
 You can also install the CLI and run `nixopus install` with options in a single command, refer [installation documentation](https://docs.nixopus.com/install/#installation-options) for more details on options
 
-
-## Demo / Screenshots
-
-| Self Host Stats | Team Display | File Manager |
-| :-: | :-: | :-: |
-| <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/28nkmy49nm7oi5tq1t8c.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/28nkmy49nm7oi5tq1t8c.webp" alt="Self Host Stats" /></a> | <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/gd5wei3oorzo6nwz96ro.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/gd5wei3oorzo6nwz96ro.webp" alt="Team Display" /></a> | <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ikku6lr6cuqvv4ap5532.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ikku6lr6cuqvv4ap5532.webp" alt="File Manager" /></a> |
-
-| Self Host Logs | Dashboard Overview |  Notification Preferences |
-| :-: | :-: | :-: |
-| <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/quinawz7qvb6b5czi7u9.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/quinawz7qvb6b5czi7u9.webp" alt="Self Host Logs" /></a> | <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/iu7s99nj347eb24b2sdz.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/iu7s99nj347eb24b2sdz.webp" alt="Dashboard Overview" /></a> |  <a href="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jtcayilnk5oeyy3qmcrp.webp"><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jtcayilnk5oeyy3qmcrp.webp" alt="Notification Preferences" /></a> |
-
 ## About the Name
 
 Nixopus is derived from the combination of "octopus" and the Linux penguin (Tux). While the name might suggest a connection to [NixOS](https://nixos.org/), Nixopus is an independent project with no direct relation to NixOS or its ecosystem.
