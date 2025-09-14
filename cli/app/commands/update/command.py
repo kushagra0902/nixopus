@@ -13,3 +13,13 @@ def update_callback(
     logger = Logger(verbose=verbose)
     update = Update(logger=logger)
     update.run()
+
+
+@update_app.command()
+def cli(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show more details while updating"),
+):
+    """Update CLI tool"""
+    logger = Logger(verbose=verbose)
+    update = Update(logger=logger)
+    update.update_cli()
