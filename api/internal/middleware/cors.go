@@ -70,6 +70,7 @@ func CorsMiddleware(next http.Handler) http.Handler {
 func SupertokensCorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Upgrade") == "websocket" {
+			r.Header.Set("connection", "Upgrade")
 			next.ServeHTTP(w, r)
 			return
 		}
