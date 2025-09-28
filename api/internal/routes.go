@@ -33,6 +33,7 @@ import (
 	permissions_storage "github.com/raghavyuva/nixopus-api/internal/features/permission/storage"
 	role_service "github.com/raghavyuva/nixopus-api/internal/features/role/service"
 	role_storage "github.com/raghavyuva/nixopus-api/internal/features/role/storage"
+	"github.com/raghavyuva/nixopus-api/internal/features/supertokens"
 	update "github.com/raghavyuva/nixopus-api/internal/features/update/controller"
 	update_service "github.com/raghavyuva/nixopus-api/internal/features/update/service"
 	user "github.com/raghavyuva/nixopus-api/internal/features/user/controller"
@@ -60,6 +61,8 @@ func NewRouter(app *storage.App) *Router {
 }
 
 func (router *Router) Routes() {
+	// Initialize SuperTokens authentication system
+	supertokens.Init(router.app)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -74,6 +77,7 @@ func (router *Router) Routes() {
 	l := logger.NewLogger()
 	server := fuego.NewServer(
 		fuego.WithGlobalMiddlewares(
+			middleware.SupertokensCorsMiddleware,
 			middleware.RecoveryMiddleware,
 			middleware.CorsMiddleware,
 			middleware.LoggingMiddleware,

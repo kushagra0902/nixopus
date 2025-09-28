@@ -1,0 +1,230 @@
+package supertokens
+
+import (
+	"fmt"
+	"log"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/raghavyuva/nixopus-api/internal/config"
+	user_storage "github.com/raghavyuva/nixopus-api/internal/features/auth/storage"
+	"github.com/raghavyuva/nixopus-api/internal/storage"
+	"github.com/raghavyuva/nixopus-api/internal/types"
+	shared_types "github.com/raghavyuva/nixopus-api/internal/types"
+	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
+	"github.com/supertokens/supertokens-golang/recipe/emailpassword/epmodels"
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+	"github.com/uptrace/bun"
+)
+
+var app *storage.App
+
+// Init initializes the SuperTokens authentication system
+func Init(appInstance *storage.App) {
+	app = appInstance
+	config := config.AppConfig
+	apiBasePath := "/auth"
+	websiteBasePath := "/auth"
+
+	err := supertokens.Init(supertokens.TypeInput{
+		Supertokens: &supertokens.ConnectionInfo{
+			ConnectionURI: config.Supertokens.ConnectionURI,
+			APIKey:        config.Supertokens.APIKey,
+		},
+		AppInfo: supertokens.AppInfo{
+			AppName:         "Nixopus",
+			APIDomain:       config.Supertokens.APIDomain,
+			WebsiteDomain:   config.Supertokens.WebsiteDomain,
+			APIBasePath:     &apiBasePath,
+			WebsiteBasePath: &websiteBasePath,
+		},
+		RecipeList: []supertokens.Recipe{
+			emailpassword.Init(&epmodels.TypeInput{
+				Override: &epmodels.OverrideStruct{
+					APIs: func(originalImplementation epmodels.APIInterface) epmodels.APIInterface {
+						originalSignUpPOST := *originalImplementation.SignUpPOST
+						newSignUpPOST := func(formFields []epmodels.TypeFormField, tenantId string, options epmodels.APIOptions, userContext supertokens.UserContext) (epmodels.SignUpPOSTResponse, error) {
+							// Call the original sign up API
+							response, err := originalSignUpPOST(formFields, tenantId, options, userContext)
+
+							// If sign up was successful, create user in our database
+							if err == nil && response.OK != nil {
+								createUserInDatabase(response.OK.User.ID, response.OK.User.Email)
+							}
+
+							return response, err
+						}
+						originalImplementation.SignUpPOST = &newSignUpPOST
+						return originalImplementation
+					},
+				},
+			}),
+			session.Init(&sessmodels.TypeInput{
+				ExposeAccessTokenToFrontendInCookieBasedAuth: true,
+			}),
+		},
+	})
+
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+// createUserInDatabase creates a user in our database when they sign up through SuperTokens
+func createUserInDatabase(supertokensUserID, email string) {
+	if app == nil {
+		log.Printf("Warning: App instance not available for user creation")
+		return
+	}
+
+	// Check if user already exists
+	userStorage := &user_storage.UserStorage{DB: app.Store.DB, Ctx: app.Ctx}
+	existingUser, err := userStorage.FindUserBySupertokensID(supertokensUserID)
+	if err == nil && existingUser != nil {
+		log.Printf("User with SuperTokens ID %s already exists", supertokensUserID)
+		return
+	}
+
+	// Create new user
+	user := &types.User{
+		ID:                uuid.New(),
+		SupertokensUserID: supertokensUserID,
+		Email:             email,
+		Username:          strings.Split(email, "@")[0], // Use email as username for now
+		Type:              shared_types.UserTypeAdmin,
+		IsVerified:        true,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
+	}
+
+	if err := userStorage.CreateUser(user); err != nil {
+		log.Printf("Failed to create user in database: %v", err)
+		return
+	}
+
+	// Start transaction for organization creation
+	tx, err := app.Store.DB.BeginTx(app.Ctx, nil)
+	if err != nil {
+		log.Printf("Failed to start transaction: %v", err)
+		return
+	}
+	defer tx.Rollback()
+
+	// Create default organization for the user (similar to admin registration flow)
+	organization, err := createDefaultOrganizationForUser(*user, &tx)
+	if err != nil {
+		log.Printf("Failed to create default organization: %v", err)
+		return
+	}
+
+	// Add user to organization as admin
+	if err := addUserToOrganizationWithRole(*user, organization, "admin", &tx); err != nil {
+		log.Printf("Failed to add user to organization: %v", err)
+		return
+	}
+
+	if err := createDefaultFeatureFlags(organization.ID, &tx); err != nil {
+		log.Printf("Failed to create default feature flags: %v", err)
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Printf("Failed to commit transaction: %v", err)
+		return
+	}
+
+	log.Printf("Successfully created user %s (ID: %s) in database with SuperTokens ID %s and default organization %s (ID: %s)",
+		email, user.ID, supertokensUserID, organization.Name, organization.ID)
+}
+
+// createDefaultOrganizationForUser creates a default organization for a user
+func createDefaultOrganizationForUser(user types.User, tx *bun.Tx) (types.Organization, error) {
+	log.Printf("Creating default organization for user %s", user.Email)
+
+	// Create a simple organization structure
+	organization := types.Organization{
+		ID:          uuid.New(),
+		Name:        user.Username + "'s Team",
+		Description: "My Team",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	_, err := tx.NewInsert().Model(&organization).Exec(app.Ctx)
+	if err != nil {
+		return types.Organization{}, fmt.Errorf("failed to create organization: %w", err)
+	}
+
+	log.Printf("Created default organization for user %s", user.Email)
+	return organization, nil
+}
+
+// addUserToOrganizationWithRole adds a user to an organization with a specific role
+func addUserToOrganizationWithRole(user types.User, organization types.Organization, roleName string, tx *bun.Tx) error {
+	log.Printf("Adding user to organization with role %s", roleName)
+
+	// Get the role by name
+	var role types.Role
+	err := tx.NewSelect().Model(&role).Where("name = ?", roleName).Scan(app.Ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get role %s: %w", roleName, err)
+	}
+
+	// Create organization user relationship
+	orgUser := types.OrganizationUsers{
+		ID:             uuid.New(),
+		UserID:         user.ID,
+		OrganizationID: organization.ID,
+		RoleID:         role.ID,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	_, err = tx.NewInsert().Model(&orgUser).Exec(app.Ctx)
+	if err != nil {
+		return fmt.Errorf("failed to add user to organization: %w", err)
+	}
+
+	log.Printf("Added user %s (ID: %s) to organization %s (ID: %s) with role %s (ID: %s)",
+		user.Email, user.ID, organization.Name, organization.ID, roleName, role.ID)
+	return nil
+}
+
+// createDefaultFeatureFlags creates default feature flags for a new organization
+func createDefaultFeatureFlags(organizationID uuid.UUID, tx *bun.Tx) error {
+	log.Printf("Creating default feature flags for organization %s", organizationID)
+
+	defaultFeatures := []types.FeatureName{
+		types.FeatureDomain,
+		types.FeatureTerminal,
+		types.FeatureNotifications,
+		types.FeatureFileManager,
+		types.FeatureSelfHosted,
+		types.FeatureAudit,
+		types.FeatureGithubConnector,
+		types.FeatureMonitoring,
+		types.FeatureContainer,
+	}
+
+	for _, feature := range defaultFeatures {
+		featureFlag := types.FeatureFlag{
+			ID:             uuid.New(),
+			OrganizationID: organizationID,
+			FeatureName:    string(feature),
+			IsEnabled:      true,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		}
+
+		_, err := tx.NewInsert().Model(&featureFlag).Exec(app.Ctx)
+		if err != nil {
+			return fmt.Errorf("failed to create feature flag %s: %w", feature, err)
+		}
+	}
+
+	log.Printf("Created %d default feature flags for organization %s", len(defaultFeatures), organizationID)
+	return nil
+}
