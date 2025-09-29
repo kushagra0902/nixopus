@@ -88,14 +88,6 @@ export const userApi = createApi({
         return response.data;
       }
     }),
-    requestPasswordResetLink: builder.mutation<void, void>({
-      query() {
-        return {
-          url: USERURLS.REQUEST_PASSWORD_RESET_LINK,
-          method: 'POST'
-        };
-      }
-    }),
     getOrganizationUsers: builder.query<OrganizationUsers[], string>({
       query(organizationId) {
         return {

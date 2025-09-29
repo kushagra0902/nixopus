@@ -306,15 +306,10 @@ func (router *Router) WebSocketServer(f *fuego.Server, deployController *deploy.
 }
 
 func (router *Router) AuthRoutes(authController *auth.AuthController, s *fuego.Server) {
-	fuego.Post(s, "/register", authController.Register)
-	fuego.Post(s, "/login", authController.Login)
-	fuego.Post(s, "/refresh-token", authController.RefreshToken)
 	fuego.Get(s, "/is-admin-registered", authController.IsAdminRegistered)
 }
 
 func (router *Router) AuthenticatedAuthRoutes(s *fuego.Server, authController *auth.AuthController) {
-	fuego.Post(s, "/request-password-reset", authController.GeneratePasswordResetLink)
-	fuego.Post(s, "/reset-password", authController.ResetPassword)
 	fuego.Post(s, "/logout", authController.Logout)
 	fuego.Post(s, "/send-verification-email", authController.SendVerificationEmail)
 	fuego.Get(s, "/verify-email", authController.VerifyEmail)
