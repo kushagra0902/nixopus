@@ -47,6 +47,17 @@ func Init(appInstance *storage.App) {
 					APIs: func(originalImplementation epmodels.APIInterface) epmodels.APIInterface {
 						originalSignUpPOST := *originalImplementation.SignUpPOST
 						newSignUpPOST := func(formFields []epmodels.TypeFormField, tenantId string, options epmodels.APIOptions, userContext supertokens.UserContext) (epmodels.SignUpPOSTResponse, error) {
+							// If an admin already exists, disable sign up attempts
+							if app != nil {
+								userStorage := &user_storage.UserStorage{DB: app.Store.DB, Ctx: app.Ctx}
+								adminUser, findErr := userStorage.FindUserByType(shared_types.UserTypeAdmin)
+								if findErr == nil && adminUser != nil {
+									return epmodels.SignUpPOSTResponse{
+										GeneralError: &supertokens.GeneralErrorResponse{Message: "Sign up is disabled"},
+									}, nil
+								}
+							}
+
 							// Call the original sign up API
 							response, err := originalSignUpPOST(formFields, tenantId, options, userContext)
 
