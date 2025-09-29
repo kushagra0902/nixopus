@@ -19,7 +19,11 @@ export const frontendConfig = (): SuperTokensConfig => {
   return {
     appInfo,
     recipeList: [
-      EmailPasswordReact.init(),
+      EmailPasswordReact.init({
+        resetPasswordUsingTokenFeature: {
+          disableDefaultUI: true,
+        },
+      }),
       SessionReact.init(),
     ],
     windowHandler: (original: any) => ({

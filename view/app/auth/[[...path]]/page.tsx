@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSessionContext } from 'supertokens-auth-react/recipe/session';
 import { signIn } from 'supertokens-auth-react/recipe/emailpassword';
+import { ResetPasswordUsingToken } from 'supertokens-auth-react/recipe/emailpassword/prebuiltui';
 import { LoginForm } from '@/components/features/login-form';
 import { useTranslation } from '@/hooks/use-translation';
 import { toast } from 'sonner';
@@ -78,17 +79,24 @@ export default function Auth() {
     );
   }
 
+  const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isResetPath = path === '/auth/reset-password';
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <LoginForm
-          email={email}
-          password={password}
-          handleEmailChange={handleEmailChange}
-          handlePasswordChange={handlePasswordChange}
-          handleLogin={handleLogin}
-          isLoading={isLoading}
-        />
+        {isResetPath ? (
+          <ResetPasswordUsingToken />
+        ) : (
+          <LoginForm
+            email={email}
+            password={password}
+            handleEmailChange={handleEmailChange}
+            handlePasswordChange={handlePasswordChange}
+            handleLogin={handleLogin}
+            isLoading={isLoading}
+          />
+        )}
       </div>
     </div>
   );
