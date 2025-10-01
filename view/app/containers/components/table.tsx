@@ -90,7 +90,7 @@ const ContainersTable = ({
               const containerName = container.name;
 
               const hasPorts = container.ports && container.ports.length > 0;
-              console.log(container);
+              
               const formattedDate = container.created
                 ? new Intl.DateTimeFormat(undefined, {
                     day: 'numeric',
@@ -155,7 +155,7 @@ const ContainersTable = ({
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-6">
+              <TableCell colSpan={onAction ? 7 : 6} className="text-center py-6">
                 <TypographyMuted>{t('dashboard.containers.table.noContainers')}</TypographyMuted>
               </TableCell>
             </TableRow>
